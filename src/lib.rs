@@ -4,6 +4,7 @@
 #![test_runner(crate::test_runner::test_runner)]
 #![reexport_test_harness_main = "run_unit_tests"]
 
+pub mod allocator;
 pub mod graphics;
 pub mod qemu;
 pub mod result;
