@@ -10,12 +10,12 @@ EFI System Table に `locate_protocol()` の関数ポインタが登録されて
 
 `locate_protocol()` 関数にプロトコルの GUID を渡すことで、そのプロトコルへのポインタを得ることができる。
 
-## EFI Graphics Output Protocol
-
-フレームバッファのアドレスが含まれている。
-
 ### `get_memory_map()`
 
 ## プロトコル
 
 各プロトコルには GUID が割り当てられている。
+
+## EFI Graphics Output Protocol
+
+フレームバッファのアドレスが含まれている。
