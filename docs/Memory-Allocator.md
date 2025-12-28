@@ -1,6 +1,6 @@
-# Memory Allocater
+# Memory Allocator
 
-## First Fit Allocater
+## First Fit Allocator
 
 - alignment: 32 B
 - 割り当てサイズは 2 の冪乗に繰り上げる。
