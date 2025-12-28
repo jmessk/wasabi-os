@@ -125,7 +125,9 @@ struct EfiBootServicesTable {
         descriptor_size: *mut usize,
         descriptor_version: *mut u32,
     ) -> EfiStatus,
-    _reserved1: [u64; 32],
+    _reserved1: [u64; 21],
+    exit_boot_services: extern "win64" fn(image_handle: EfiHandle, map_key: usize) -> EfiStatus,
+    _reserved4: [u64; 10],
     locate_protocol: extern "win64" fn(
         protocol: *const EfiGuid,
         registration: *const EfiVoid,
@@ -134,6 +136,7 @@ struct EfiBootServicesTable {
 }
 
 const _: () = assert!(offset_of!(EfiBootServicesTable, get_memory_map) == 56);
+const _: () = assert!(offset_of!(EfiBootServicesTable, exit_boot_services) == 232);
 const _: () = assert!(offset_of!(EfiBootServicesTable, locate_protocol) == 320);
 
 impl EfiBootServicesTable {
@@ -204,7 +207,7 @@ fn locate_graphic_protocol<'a>(
 }
 
 #[no_mangle]
-fn efi_main(_image_handle: EfiHandle, efi_system_table: &EfiSystemTable) {
+fn efi_main(image_handle: EfiHandle, efi_system_table: &EfiSystemTable) {
     let mut vram = init_vram(efi_system_table).expect("init_vram failed");
 
     let vw = vram.width;
@@ -241,6 +244,8 @@ fn efi_main(_image_handle: EfiHandle, efi_system_table: &EfiSystemTable) {
     )
     .unwrap();
 
+    exit_from_efi_boot_services(image_handle, efi_system_table, &mut memory_map);
+    writeln!(w, "Hello, Non-UEFI world!").unwrap();
     loop {
         hlt()
     }
@@ -498,5 +503,21 @@ impl Write for VramTextWriter<'_> {
         }
 
         Ok(())
+    }
+}
+
+fn exit_from_efi_boot_services(
+    image_handle: EfiHandle,
+    efi_system_table: &EfiSystemTable,
+    memory_map: &mut MemoryMapHolder,
+) {
+    loop {
+        let status = efi_system_table.boot_services.get_memory_map(memory_map);
+        assert_eq!(status, EfiStatus::Success);
+        let exit_boot_services = efi_system_table.boot_services.exit_boot_services;
+        let status = exit_boot_services(image_handle, memory_map.map_key);
+        if status == EfiStatus::Success {
+            break;
+        }
     }
 }
