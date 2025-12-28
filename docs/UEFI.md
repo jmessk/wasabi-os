@@ -1,8 +1,8 @@
 # UEFI
 
-## プロトコル
+## EFI Boot Services Table
 
-各プロトコルには GUID が割り当てられている。
+UEFI がメモリに配置した各種サービスを提供する関数のポインタを含んだ構造体。
 
 ### `locate_protocol()`
 
@@ -13,3 +13,9 @@ EFI System Table に `locate_protocol()` の関数ポインタが登録されて
 ## EFI Graphics Output Protocol
 
 フレームバッファのアドレスが含まれている。
+
+### `get_memory_map()`
+
+## プロトコル
+
+各プロトコルには GUID が割り当てられている。
