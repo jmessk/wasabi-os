@@ -346,6 +346,7 @@ mod test {
         ];
 
         let mut pointers = vec![null_mut::<u8>(); allocations.len()];
+
         for e in allocations.iter().zip(pointers.iter_mut()).enumerate() {
             let (i, (layout, pointer)) = e;
             *pointer = ALLOCATOR.alloc_with_options(*layout);
